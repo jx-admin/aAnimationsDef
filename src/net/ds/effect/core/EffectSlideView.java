@@ -21,6 +21,8 @@ public class EffectSlideView extends MySlideView2 {
     protected Transformation mChildTransformation;
 
     private int mCurrentEffectType = 0;
+    
+    private EffectInfo effect ;
 
     private PaintFlagsDrawFilter mAntiAliesFilter = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
@@ -42,7 +44,10 @@ public class EffectSlideView extends MySlideView2 {
     }
 
     public void setCurrentEffect(int effectKey) {
-        mCurrentEffectType = effectKey;
+    	if(this.mCurrentEffectType!=effectKey){
+    		mCurrentEffectType = effectKey;
+    		effect = EffectFactory.getEffectByType(mCurrentEffectType);
+    	}
     }
 
     public int getCurrentScreenTransitionType() {
@@ -105,16 +110,15 @@ public class EffectSlideView extends MySlideView2 {
     }
 
     protected EffectInfo getChildTransformation(View childView, Transformation childTransformation) {
-        EffectInfo effect = EffectFactory.getEffectByType(mCurrentEffectType);
 
-        if (HardwareAccelerationUtils2.isHardwareAccelerated(this)) {
-            if (childView != null && effect != null && effect.needInvalidateHardwareAccelerated()) {
-                childView.invalidate();
-            }
+        if (childView == null || effect ==null) {
+            return null;
         }
 
-        if (childView == null) {
-            return null;
+        if (HardwareAccelerationUtils2.isHardwareAccelerated(this)) {
+            if (effect.needInvalidateHardwareAccelerated()) {
+                childView.invalidate();
+            }
         }
 
         int offset = getOffset(childView);
@@ -124,7 +128,7 @@ public class EffectSlideView extends MySlideView2 {
             return null;
         }
 
-        return effect == null ? null : effect.getWorkspaceChildStaticTransformation(this, childView, childTransformation, radio, offset, this.mCurrChildIndex, true) ? effect : null;
+        return effect != null && effect.getWorkspaceChildStaticTransformation(this, childView, childTransformation, radio, offset, this.mCurrChildIndex, true) ? effect : null;
     }
 
     protected int getOffset(View childView) {
