@@ -134,7 +134,7 @@ public class MySlideView2 extends ViewGroup {
         setAlwaysDrawnWithCacheEnabled(true);
     }
 
-    private int getScreenWidth() {
+    protected int getScreenWidth() {
         return this.getContext().getResources().getDisplayMetrics().widthPixels;
     }
 

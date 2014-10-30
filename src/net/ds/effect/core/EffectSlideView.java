@@ -12,11 +12,15 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Interpolator;
 import android.view.animation.Transformation;
+import android.widget.Scroller;
 
 public class EffectSlideView extends MySlideView2 {
 
     public static final String TAG = Constants.TAG;
+    
+    private Scroller mScroller;
 
     protected Transformation mChildTransformation;
 
@@ -29,14 +33,27 @@ public class EffectSlideView extends MySlideView2 {
     public EffectSlideView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setChildrenDrawingOrderEnabled(true);
+        init(context);
     }
 
     public EffectSlideView(Context context) {
         this(context, null);
+        init(context);
     }
 
     public EffectSlideView(Context context, AttributeSet attrs, int defStyle) {
         this(context, attrs);
+        init(context);
+    }
+    
+    private void init(Context context){
+    	mScroller = new Scroller(context, new Interpolator() {
+			@Override
+			public float getInterpolation(float t) {
+				t -= 1.0f;
+				return t * t * t + 1;
+			}
+		}, false);
     }
 
     public PaintFlagsDrawFilter getAntiAliesFilter() {
@@ -124,7 +141,7 @@ public class EffectSlideView extends MySlideView2 {
         int offset = getOffset(childView);
         float radio = getCurrentScrollRatio(childView, offset);
 
-        if (radio == 0 || Math.abs(radio) > 1) {
+        if (radio == 0 /*|| Math.abs(radio) > 1*/) {
             return null;
         }
 
@@ -134,10 +151,14 @@ public class EffectSlideView extends MySlideView2 {
     protected int getOffset(View childView) {
         return 0;
     }
+    
+    public int getOffestForCenter(View childView) {
+        return (childView.getMeasuredWidth()-this.getMeasuredWidth())/2;
+    }
 
     protected float getCurrentScrollRatio(View childView, int offset) {
         float childMeasuredWidth = childView.getMeasuredWidth();
-        int childLeft = childView.getLeft() + offset;
+        int childLeft = childView.getLeft() + offset+getOffestForCenter(childView);
         float ratio = (this.getScrollX() - childLeft) * 1.0F / childMeasuredWidth;
         
         Log.v(Constants.RATIO_TAG, "scrollX = " + getScrollX() + ",  left = " + childLeft + ", radio = " + ratio + ", child = " + childView);
@@ -207,4 +228,32 @@ public class EffectSlideView extends MySlideView2 {
         }
         return super.getChildDrawingOrder(childCount, i);
     }
+
+    public void scrollToChild(int index,boolean anim) {
+        if (index >= 0 && index < getChildCount()) {
+            setCurrentChildIndex(index);
+            int width = getChildAt(index).getWidth();
+            if(anim){
+            	mScroller.startScroll(getScrollX(), 0, mCurrChildX /*+ (width - getScreenWidth()) / 2*/, 0, 600);
+            	invalidate();
+            }else{
+            	scrollTo(mCurrChildX + (width - getScreenWidth()) / 2, 0);
+            }
+        }
+    }
+
+	@Override
+	public void computeScroll() {
+		if (mScroller.computeScrollOffset()) {
+			scrollTo(mScroller.getCurrX(),  0);
+			invalidate();
+		}
+
+		if(mScroller.isFinished()){
+            effect = EffectFactory.getEffectByType(mCurrentEffectType);
+            if (effect != null) {
+                effect.onTouchUpCancel(isScrolling());
+            }
+		}
+	}
 }
