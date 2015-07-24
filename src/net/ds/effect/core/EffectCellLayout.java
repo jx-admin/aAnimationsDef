@@ -6,6 +6,13 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * 支持动效的桌面网格布局
+ * @author junxu.wang
+ *
+ * @date : 2015年6月30日 下午4:54:33
+ *
+ */
 public class EffectCellLayout extends CellLayout implements EffectInfo.Callback {
     
     private boolean mEffectEabled = true;
@@ -23,6 +30,10 @@ public class EffectCellLayout extends CellLayout implements EffectInfo.Callback 
         return super.drawChild(canvas, child, drawingTime);
     }
     
+    /**重载了父类的方法，判断是否需要动效渲染
+     *  (non-Javadoc)
+     * @see android.view.ViewGroup#drawChild(android.graphics.Canvas, android.view.View, long)
+     */
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         if (child == null) {
@@ -38,6 +49,15 @@ public class EffectCellLayout extends CellLayout implements EffectInfo.Callback 
         }
     }
     
+    /**
+     * <pre>
+     * 动效渲染子View
+     * @param canvas
+     * @param childView
+     * @param drawingTime
+     * @return
+     * </pre>
+     */
     protected Boolean applyChildTransformation(Canvas canvas, View childView, long drawingTime) {
         if (childView != null && childView.getParent() instanceof EffectCellLayout
                 && childView.getParent().getParent() instanceof EffectSlideView) {

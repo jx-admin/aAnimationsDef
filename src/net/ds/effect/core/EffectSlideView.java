@@ -67,6 +67,12 @@ public class EffectSlideView extends MySlideView2 {
     	}
     }
 
+    /**
+     * <pre>
+     * 当前动效类型
+     * @return
+     * </pre>
+     */
     public int getCurrentScreenTransitionType() {
         return mCurrentEffectType;
     }
@@ -76,6 +82,11 @@ public class EffectSlideView extends MySlideView2 {
         return mCurrChildIndex;
     }
 
+    /**
+     * Chile动效
+     *  (non-Javadoc)
+     * @see net.ds.effect.framework.MySlideView2#drawChild(android.graphics.Canvas, android.view.View, long)
+     */
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         if (mChildTransformation == null) {
@@ -152,14 +163,29 @@ public class EffectSlideView extends MySlideView2 {
         return 0;
     }
     
+    /**
+     * <pre>
+     * ChildView与View的中心距离，也是两个View宽度的左右差
+     * @param childView 子View
+     * @return 子View的中心与View的中心距离
+     * </pre>
+     */
     public int getOffestForCenter(View childView) {
         return (childView.getMeasuredWidth()-this.getMeasuredWidth())/2;
     }
 
+    /**
+     * <pre>
+     * 
+     * @param childView
+     * @param offset
+     * @return childView便宜View距离，除以自身宽的的倍数
+     * </pre>
+     */
     protected float getCurrentScrollRatio(View childView, int offset) {
         float childMeasuredWidth = childView.getMeasuredWidth();
-        int childLeft = childView.getLeft() + offset+getOffestForCenter(childView);
-        float ratio = (this.getScrollX() - childLeft) * 1.0F / childMeasuredWidth;
+        int childLeft = childView.getLeft() + offset+getOffestForCenter(childView);//纠正childView与View宽度差距情况下的左边距
+        float ratio = (this.getScrollX() - childLeft) * 1.0F / childMeasuredWidth;//View偏移ChildView的倍数
         
         Log.v(Constants.RATIO_TAG, "scrollX = " + getScrollX() + ",  left = " + childLeft + ", radio = " + ratio + ", child = " + childView);
         return ratio;

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * 桌面的网格布局
  * @author songzhaochun
  *
  */
@@ -86,6 +87,10 @@ public class CellLayout extends ViewGroup {
     private int mCellWidth;
     private int mCellHeight;
 
+    /**确定网格布局子View的大小
+     *  (non-Javadoc)
+     * @see android.view.View#onMeasure(int, int)
+     */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -110,6 +115,10 @@ public class CellLayout extends ViewGroup {
         }
     }
 
+    /**网格布局子View
+     *  (non-Javadoc)
+     * @see android.view.ViewGroup#onLayout(boolean, int, int, int, int)
+     */
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int width = getWidth();
@@ -149,6 +158,10 @@ public class CellLayout extends ViewGroup {
         super.setChildrenDrawnWithCacheEnabled(enabled);
     }
 
+    /**加入行分割线
+     *  (non-Javadoc)
+     * @see android.view.ViewGroup#dispatchDraw(android.graphics.Canvas)
+     */
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
